@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  </head>
+  <body>
+    <% require 'pg' %>
+
+    <% connection = PG::connect(dbname: "goya") %>
+    <% connection.internal_encoding = "UTF-8" %>
+    
+  <!--以下は課題に無いのでコメントアウトしておきます       -->
+　<!-- このformに囲まれている記述を、indicate.rb(cgi)に送信しますと言う記述 -->
+  <!--<form action='indicate.cgi' method='POST'>-->
+  <!--         下記に文字を入力してください<br><br>-->
+           <!-- このinputに入力された情報が、submitの送信ボタンでデータとして送られる -->
+           <!-- name='input'は送られた先の目印となる情報 -->
+           <!-- type="text"は入力ができるフォームを作成すると言う記述 -->
+  <!--   <input type="text"  name='input' > <br>-->
+  <!--   <input type="submit" name="送信" >-->
+  <!--</form>-->
+   
+  <!--以下は課題に無いのでコメントアウトしておきます       -->
+  <%# result = connection.exec("select date, weight, give_for from crops;") %>
+  <%# date = [] %>
+  <%# result.each do |record| %>
+    <%#  date << "ゴーヤの大きさ：#{record["weight"]}　売った相手：#{record["give_for"]}" %>
+  <%# end %>
+  <!--<form action='goya.cgi' method='POST'>-->
+  <!--     下記のボタンを押すと、ゴーヤの大きさと売った相手の情報ページに飛びます<br><br>-->
+       
+  <!--  <input type="text" name="goya" value=<%#= date.join('"') %>>-->
+  <!--  <input type="submit" name="送信" >-->
+  <!--</form>-->
+    
+  <% result = connection.exec("select weight,length,give_for from crops where not (give_for = '自家消費');") %>
+  <% date = [] %>
+  <% result.each do |record| %>
+    <% date << "ゴーヤの大きさ：#{record["weight"]}g　ゴーヤの長さ：#{record["length"]}cm　売った相手：#{record["give_for"]}" %>
+  <% end %>
+  <form action='everyone.cgi'method='POST'>
+       下記のボタンを押すと、自家消費以外のゴーヤの情報ページに飛びます<br><br>
+       
+    　<input type="text" name="goya" value=<%= date.join('"') %>>
+　　　<input type="submit" name="送信" >
+  </form>
+  
+  <!--以下悪いゴーヤの出力-->
+  <% result = connection.exec("select weight, give_for quality from crops where quality = false;") %>
+  <% data = [] %>
+  <% result.each do |record| %>
+      <%  data << "ゴーヤの大きさ:#{record["weight"]}g　売った相手：#{record["give_for"]}"%>
+  <% end %>
+  <form action='goya.cgi' method='POST'>
+           下記ボタンを押すと、悪いゴーヤの情報ページに飛びます<br><br>
+          
+       <input type="text" name="goya" value=<%= data.join('"') %>>
+       <input type="submit" name="送信" >
+  </form>
+  </body>
+</html>
